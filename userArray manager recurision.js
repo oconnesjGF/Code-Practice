@@ -9,31 +9,30 @@ function getUserRecords() {
         userSysIDArr.push(grSysUser.getValue('sys_id'));
 
     }
-    var userIDArrLength = userSysIDArr.length - 1;
     //function ends
     //gs.info(userSysIDArr) // this returns correclty 
-    function userSysIDLoop(counterA) {
+    function userSysIDLoop(counterA, userSysIDArr) {
+        var userIDArrLength = userSysIDArr.length - 1;
         /*This function will recursively increment through the user Sys ID array and pass each sys id into the next function */
         var objectString = 'outputArr[' + counterA + ']["employee"]["manager"]';
         if (counterA === userIDArrLength) {
             return outputArr;
         }
-        //gs.info('counter value is: ' + counter); // this is not getting returned correctly 
 
-        var userSysID = userSysIDArr[counter];
-        //gs.info('User sys ids are: '+userSysID);
+        var userSysID = userSysIDArr[counterA];
+
 
         function managerRecurse(userSysID, outputArr, counterB, objectString) {
 
-            grSysUser = new GlideRecord('sys_user');
-            grSysUser.get(userSysID);
-            var usersManagerID = grSysUser.getValue('manager');
+            var sysUser = new GlideRecord('sys_user');
+            sysUser.get(userSysID);
+            var usersManagerID = sysUser.getValue('manager');
 
             if (usersManagerID === null) {
-                return userSysIDLoop(counter) ;
+                return userSysIDLoop(counterA + 1, userSysIDArr);
             }
-            var userFullName = grSysUser.getDisplayValue('name');
-            var usersManagerName = grSysUser.getDisplayValue('manager');
+            var userFullName = sysUser.getDisplayValue('name');
+            var usersManagerName = sysUser.getDisplayValue('manager');
 
             if (counterB === 0) {
 
@@ -50,12 +49,14 @@ function getUserRecords() {
                 eval(objectString + ' = {"name": "' + usersManagerName + '"}');
 
             }
-            return managerRecurse(usersManagerID,outputArr, counterB +1, objectString)
+            return managerRecurse(usersManagerID, outputArr, counterB + 1, objectString);
         }
-        return managerRecurse(userSysID,[],0,objectString);
+        return managerRecurse(userSysID, outputArr, 0, objectString);
     }
-    return userSysIDLoop(0);
+    var outputArr = [];
+
+    return gs.info(JSON.stringify(userSysIDLoop(0, userSysIDArr)));
 
 }
 
-gs.info(getUserRecords())
+getUserRecords();

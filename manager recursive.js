@@ -1,4 +1,6 @@
-function managerRecurse(userSysID, outputArr, counter) {
+var objectString = 'outputArr[0]["employee"]["manager"]';
+
+function managerRecurse(userSysID, outputArr, counter, objectString) {
   var grSysUser = new GlideRecord('sys_user');
   grSysUser.get(userSysID);
   var usersManagerID = grSysUser.getValue('manager');
@@ -18,24 +20,17 @@ function managerRecurse(userSysID, outputArr, counter) {
           "name": usersManagerName
         }
       }
-    })
+    });
   } else {
-
-    var managerObject = 'outputArr[0]["employee"]["manager"]';
-
-    function addManager(managerName, managerObject) {
-      var newManagerObject = managerObject + '["manager"]';
-      eval(newManagerObject + ' = {"name": "' + managerName + '"}');
-      return newManagerObject;
-    }
-    managerObject = addManager(userFullName, managerObject);
+    objectString += '["manager"]'
+    eval(objectString + ' = {"name": "' + usersManagerName + '"}');
 
   }
-  return managerRecurse(usersManagerID, outputArr, counter + 1);
+  return managerRecurse(usersManagerID, outputArr, counter + 1, objectString);
 
-}
+};
 
 
 
-var resultArr = managerRecurse('02826bf03710200044e0bfc8bcbe5d88', [],0);
+var resultArr = managerRecurse('02826bf03710200044e0bfc8bcbe5d88', [], 0, objectString);
 gs.info(JSON.stringify(resultArr));

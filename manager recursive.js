@@ -1,32 +1,16 @@
-function getUserRecords() {
+userManagers('02826bf03710200044e0bfc8bcbe5d88');
 
-  var grSysUser = new GlideRecord('sys_user');
-  grSysUser.addEncodedQuery("active=true^managerISNOTEMPTY");
-  grSysUser.query();
-  var userSysIDArr = [];
-  while (grSysUser.next()) {
-    userSysIDArr.push(grSysUser.getValue('sys_id'));
+function userManagers(userSysID) {
+  var objectString = 'outputArr[0]["employee"]["manager"]';
 
-  }
-  var userIDArrLength = userSysIDArr.length - 1;
-
-  function userSysIDLoop(userSysIDArr, userIDArrLength) {
-    var objectString = 'outputArr[' + counter + ']["employee"]["manager"]';
-
-    if (counter === userIDArrLength) {
-      return;
-    }
-    var userSysID = userSysIDArr[counter];
-
-
-
-    grSysUser = new GlideRecord('sys_user');
+  function managerRecurse(userSysID, outputArr, counter, objectString) {
+    var grSysUser = new GlideRecord('sys_user');
     grSysUser.get(userSysID);
     var usersManagerID = grSysUser.getValue('manager');
-
     if (usersManagerID === null) {
       return outputArr;
     }
+
     var userFullName = grSysUser.getDisplayValue('name');
     var usersManagerName = grSysUser.getDisplayValue('manager');
 
@@ -45,9 +29,8 @@ function getUserRecords() {
       eval(objectString + ' = {"name": "' + usersManagerName + '"}');
 
     }
+    return managerRecurse(usersManagerID, outputArr, counter + 1, objectString);
 
-
-  }
-  return userSysIDLoop(userSysIDArr, userIDArrLength);
-
-}
+  };
+  return gs.info(JSON.stringify(managerRecurse(userSysID, [], 0, objectString)));
+};

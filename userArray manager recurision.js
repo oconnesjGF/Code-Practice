@@ -3,27 +3,26 @@ grSysUser.addEncodedQuery("active=true^managerISNOTEMPTY");
 grSysUser.query();
 var userSysIDArr = [];
 while (grSysUser.next()) {
-     userSysIDArr.push(grSysUser.getValue('sys_id'));
-   
+    userSysIDArr.push(grSysUser.getValue('sys_id'));
+
 }
-//gs.info(userSysIDArr);
-  //var objectString = 'outputArr['+ arrCounter + ']["employee"]["manager"]';
 
-    var userIDArrLength = userSysIDArr.length-1;
+var userIDArrLength = userSysIDArr.length - 1;
 
-//gs.info(userSysIDArr[userIDArrLength])
 
-function userSysIDLoop(userSysIDArr,counter){
-   // gs.info(userIDArrLength)
-    gs.info('counter is: ' +counter);
+function userSysIDLoop(userSysIDArr, counter) {
 
-    if(counter === userIDArrLength){
+    if (counter === userIDArrLength) {
         return;
     }
-    //gs.info(userSysIDArr[counter])
-    userSysIDLoop(userSysIDArr,counter+1)
+    var userSysID = userSysIDArr[counter];
+
+    var objectString = 'outputArr[' + counter + ']["employee"]["manager"]';
+    gs.info(userSysID);
+    userSysIDLoop(userSysIDArr, counter + 1)
+
+
+    
 }
-
-
-gs.info(userSysIDLoop(userSysIDArr,0))
+userSysIDLoop(userSysIDArr, 0)
 

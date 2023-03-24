@@ -13,7 +13,7 @@ function getUserRecords() {
     //function ends
 
 
-    function userSysIDLoop(userSysIDArr, userIDArrLength) {
+    function userSysIDLoop(userSysIDArr, userIDArrLength,counter) {
         /*This function will recursively increment through the user Sys ID array and pass each sys id into the next function */
         var objectString = 'outputArr[' + counter + ']["employee"]["manager"]';
 
@@ -22,36 +22,39 @@ function getUserRecords() {
         }
         var userSysID = userSysIDArr[counter];
 
+        function managerRecurse(userSysID, outputArr, counter, objectString) {
 
+            grSysUser = new GlideRecord('sys_user');
+            grSysUser.get(userSysID);
+            var usersManagerID = grSysUser.getValue('manager');
 
-        grSysUser = new GlideRecord('sys_user');
-        grSysUser.get(userSysID);
-        var usersManagerID = grSysUser.getValue('manager');
+            if (usersManagerID === null) {
+                return outputArr;
+            }
+            var userFullName = grSysUser.getDisplayValue('name');
+            var usersManagerName = grSysUser.getDisplayValue('manager');
 
-        if (usersManagerID === null) {
-            return outputArr;
-        }
-        var userFullName = grSysUser.getDisplayValue('name');
-        var usersManagerName = grSysUser.getDisplayValue('manager');
+            if (counter === 0) {
 
-        if (counter === 0) {
-
-            outputArr.push({
-                "employee": {
-                    "name": userFullName,
-                    "manager": {
-                        "name": usersManagerName
+                outputArr.push({
+                    "employee": {
+                        "name": userFullName,
+                        "manager": {
+                            "name": usersManagerName
+                        }
                     }
-                }
-            });
-        } else {
-            objectString += '["manager"]'
-            eval(objectString + ' = {"name": "' + usersManagerName + '"}');
+                });
+            } else {
+                objectString += '["manager"]'
+                eval(objectString + ' = {"name": "' + usersManagerName + '"}');
 
+            }
+            return userSysIDLoop(userSysID,userIDArrLength,counter+1)
         }
-
-
+        return managerRecurse(userSysID,[],0, objectString);
     }
-    return userSysIDLoop(userSysIDArr, userIDArrLength);
+    return userSysIDLoop(userSysIDArr, userIDArrLength,0);
 
 }
+
+gs.info(getUserRecords())

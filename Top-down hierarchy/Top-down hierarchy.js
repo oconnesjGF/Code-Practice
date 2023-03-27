@@ -69,32 +69,11 @@ function reportsTo(counter, topLevelManagersArr, managerArr) {
     }
 
     managerArr.push({
+        "manager_ID": topMangerID,
         "employee": getName(topMangerID),
-        "direct reports": []
     });
 
-    function findDirectReports(topMangerID, managerArr, counter) {
-        //this function does a query to find the users who manager is the currentManagerID 
-        var currentManagerID = topMangerID;
-        var directReportsIDArr = [];
-        var queryString = "manager.sys_id=" + currentManagerID;
-        var sysUserGR = new GlideRecord('sys_user');
-        sysUserGR.addEncodedQuery(queryString);
-        sysUserGR.query();
-
-        while (sysUserGR.next()) {
-
-            managerArr[counter]["direct reports"].push({
-                "employee": getName(sysUserGR.getValue('sys_id'))
-            })
-            //directReportsIDArr.push(sysUserGR.getValue('sys_id'));
-
-        }
-
-        return reportsTo(counter + 1, topLevelManagersArr, managerArr)
-    }
-    return findDirectReports(topMangerID, managerArr, counter)
-    //return reportsTo(counter+1, topLevelManagersArr, outputArr);
+    return reportsTo(counter+1,topLevelManagersArr, managerArr)
 
 }
 //gs.info(JSON.stringify(reportsTo(0, topLevelManagersArr, [])[0]['direct reports'][0]))

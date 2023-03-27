@@ -52,48 +52,52 @@ function getUsersWithManagersRecords() {
 // topLevelManagersArr gets the top most users that dosent have a manager and pushes into an array 
 var topLevelManagersArr = getUsersWithManagersRecords();
 
+function getName(userID) {
+    var sysUserGR = new GlideRecord('sys_user');
+    sysUserGR.get(userID);
+    return sysUserGR.getValue('name');
+}
+
 function reportsTo(counter, topLevelManagersArr, managerArr) {
     managerArrLength = topLevelManagersArr.length;
     var topMangerID = topLevelManagersArr[counter];
-
+    //this functions goes through each id in the array and passes into the next function 
 
     if (counter === managerArrLength) {
         return managerArr;
     }
 
-    managerArr.push([{
+    managerArr.push({
         "employee": getName(topMangerID),
         "direct reports": [{
             "employee": "name",
         }]
 
-    }]);
+    });
 
-    function getName(topMangerID, sysUserGR) {
-        sysUserGR = new GlideRecord('sys_user');
-        sysUserGR.get(topMangerID);
-        return sysUserGR.getValue('name');
-    }
+
 
     function findDirectReports(topMangerID, managerArr) {
+        //this function does a query to find the users who manager is the currentManagerID 
         var currentManagerID = topMangerID;
-
 
         var queryString = "manager.sys_id=" + currentManagerID;
         var sysUserGR = new GlideRecord('sys_user');
         sysUserGR.addEncodedQuery(queryString);
         sysUserGR.query();
-        
+        /*
         while (sysUserGR.next()) {
-            userSysIDArr.push(sysUserGR.getValue('sys_id'));
+            managerArr[counter]['direct reports'].push({"employee": sysUserGR.sys_id})
 
         }
+        */
         
+
         return reportsTo(counter + 1, topLevelManagersArr, managerArr)
     }
     return findDirectReports(topMangerID, managerArr)
     //return reportsTo(counter+1, topLevelManagersArr, outputArr);
 
 }
-
+//gs.info(JSON.stringify(reportsTo(0, topLevelManagersArr, [])[0]['direct reports'][0]))
 stringify(reportsTo(0, topLevelManagersArr, []))

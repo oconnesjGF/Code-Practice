@@ -10,7 +10,7 @@ var managerArr = [{
     }
 }];
 
-function getUserRecords() {
+function getUsersWithManagersRecords() {
     var sysUserGR = new GlideRecord('sys_user');
     sysUserGR.addEncodedQuery("active=true^managerISNOTEMPTY");
     sysUserGR.query();
@@ -59,4 +59,4 @@ function getUserRecords() {
     return passEachID(0, userSysIDArr, outputArr);
 }
 
-gs.info(getUserRecords());
+gs.info(getUsersWithManagersRecords());

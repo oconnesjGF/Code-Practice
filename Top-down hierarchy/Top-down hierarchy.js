@@ -1,79 +1,62 @@
-var userSysIDArr = ["02826bf03710200044e0bfc8bcbe5d88", "06826bf03710200044e0bfc8bcbe5d57", "02826bf03710200044e0bfc8bcbe5d91", "5137153cc611227c000bbd1bd8cd2007", "02826bf03710200044e0bfc8bcbe5d76", "06826bf03710200044e0bfc8bcbe5d41", "02826bf03710200044e0bfc8bcbe5d64", "02826bf03710200044e0bfc8bcbe5d55", "02826bf03710200044e0bfc8bcbe5d7f", "02826bf03710200044e0bfc8bcbe5d3f", "02826bf03710200044e0bfc8bcbe5d5e", "0382abf03710200044e0bfc8bcbe5d42", "02826bf03710200044e0bfc8bcbe5d6d"];
-
-
-var managerArr = [{
-    "Top Level Manager": {
-        "employee": "top level manager",
-        "direct reports": [{
-            "employee": "name",
-            "direct reports": [{
-                "employee": "name"
-            }]
-        }]
-    }
-}];
-managerArr[0]["Top Level Manager"]
-
-
-managerArr[0]["Top Level Manager"]["employee"] = "Joe";
-
-
 function stringify(string) {
     gs.info(JSON.stringify(string));
 }
 
-var outputArr = [];
 
+function getUserRecords() {
+    var sysUserGR = new GlideRecord('sys_user');
+    sysUserGR.addEncodedQuery("active=true^managerISNOTEMPTY");
+    sysUserGR.query();
+    var userSysIDArr = [];
+    while (sysUserGR.next()) {
+        userSysIDArr.push(sysUserGR.getValue('sys_id'));
 
-function passEachID(counterA, userSysIDArr, outputArr) {
-    userArrLength = userSysIDArr.length - 1;
-
-    if (counterA === userArrLength) {
-        return outputArr;
     }
+    var outputArr = [];
+    var managerArr = [{
+        "Top Level Manager": {
+            "employee": "top level manager",
+            "direct reports": [{
+                "employee": "name",
+            }]
+        }
+    }];
 
-    var userSysID = userSysIDArr[counterA];
+    function passEachID(counterA, userSysIDArr, outputArr,managerArr) {
+        userArrLength = userSysIDArr.length - 1;
 
-    function userRecurse(userSysID, outputArr) {
-        var sysUserGR = new GlideRecord('sys_user');
-        sysUserGR.get(userSysID);
-        var currentUsersManagerID = sysUserGR.getValue('manager');
-        var userFullName = sysUserGR.getDisplayValue('name');
-        var usersManagerName = sysUserGR.getDisplayValue('manager');
-        //gs.info('I get here');
-        //gs.info('counter is: ' + counterA)
-        if (currentUsersManagerID != null) {
-            //gs.info(currentUsersManagerID)
-            return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr);
+        if (counterA === userArrLength) {
+            return outputArr;
         }
 
-        function managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr) {
-            var currentUserID = currentUsersManagerID;
-            sysUserGR.get(currentUserID);
-            currentUsersManagerID = sysUserGR.getValue('manager');
-            //gs.info(currentUsersManagerID);
-            if (currentUsersManagerID === null) {
-                    /*
-                if (outputArr.indexOf(sysUserGR.getDisplayValue('name')) === -1) {
-                    outputArr.push(sysUserGR.getDisplayValue('name'));
+        var userSysID = userSysIDArr[counterA];
 
-                }
-                */
+        function userRecurse(userSysID, outputArr,managerArr) {
+            var sysUserGR = new GlideRecord('sys_user');
+            sysUserGR.get(userSysID);
+            var currentUsersManagerID = sysUserGR.getValue('manager');
 
-                if (outputArr.indexOf(currentUserID) === -1) {
-                    outputArr.push(currentUserID);
-                }
-                // outputArr.push(currentUserID);
-                return passEachID(counterA + 1, userSysIDArr, outputArr);
-
-
+            if (currentUsersManagerID != null) {
+                return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr,managerArr);
             }
 
-            return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr)
+            function managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr,managerArr) {
+                var currentUserID = currentUsersManagerID;
+                sysUserGR.get(currentUserID);
+                currentUsersManagerID = sysUserGR.getValue('manager');
+                if (currentUsersManagerID === null) {
+                    if (outputArr.indexOf(currentUserID) === -1) {
+                        outputArr.push(currentUserID);
+                    }
+                    return passEachID(counterA + 1, userSysIDArr, outputArr, managerArr);
+                }
+
+                return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr, managerArr)
+            }
         }
+        return userRecurse(userSysID, outputArr, managerArr);
     }
-    return userRecurse(userSysID, outputArr);
+    return passEachID(0, userSysIDArr, outputArr, managerArr);
 }
 
-
-gs.info(passEachID(0, userSysIDArr, outputArr));
+gs.info(getUserRecords());

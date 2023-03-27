@@ -12,10 +12,9 @@ function getUsersWithManagersRecords() {
 
     }
     var topLevelManagersArr = [];
-
+    
     function passEachID(counterA, userSysIDArr, topLevelManagersArr) {
         userArrLength = userSysIDArr.length - 1;
-
         if (counterA === userArrLength) {
             return topLevelManagersArr;
         }
@@ -49,9 +48,11 @@ function getUsersWithManagersRecords() {
     }
     return passEachID(0, userSysIDArr, topLevelManagersArr);
 }
+
+
+
 // topLevelManagersArr gets the top most users that dosent have a manager and pushes into an array 
 var topLevelManagersArr = getUsersWithManagersRecords();
-
 function getName(userID) {
     var sysUserGR = new GlideRecord('sys_user');
     sysUserGR.get(userID);
@@ -72,25 +73,23 @@ function reportsTo(counter, topLevelManagersArr, managerArr) {
         "direct reports": []
     });
 
-
-
     function findDirectReports(topMangerID, managerArr, counter) {
         //this function does a query to find the users who manager is the currentManagerID 
         var currentManagerID = topMangerID;
-
+        var directReportsIDArr = [];
         var queryString = "manager.sys_id=" + currentManagerID;
         var sysUserGR = new GlideRecord('sys_user');
         sysUserGR.addEncodedQuery(queryString);
         sysUserGR.query();
 
         while (sysUserGR.next()) {
+
             managerArr[counter]["direct reports"].push({
                 "employee": getName(sysUserGR.getValue('sys_id'))
             })
+            //directReportsIDArr.push(sysUserGR.getValue('sys_id'));
 
         }
-
-
 
         return reportsTo(counter + 1, topLevelManagersArr, managerArr)
     }

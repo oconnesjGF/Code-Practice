@@ -22,11 +22,13 @@ function stringify(string) {
     gs.info(JSON.stringify(string));
 }
 
+var outputArr = [];
 
-function passEachID(counterA, userSysIDArr) {
-    userArrLength = userSysIDArr.userArrLength - 1;
 
-    if (counterA === userIDArrLength) {
+function passEachID(counterA, userSysIDArr, outputArr) {
+    userArrLength = userSysIDArr.length - 1;
+
+    if (counterA === userArrLength) {
         return outputArr;
     }
 
@@ -38,25 +40,28 @@ function passEachID(counterA, userSysIDArr) {
         var currentUsersManagerID = sysUserGR.getValue('manager');
         var userFullName = sysUserGR.getDisplayValue('name');
         var usersManagerName = sysUserGR.getDisplayValue('manager');
-
+        //gs.info('I get here');
+        //gs.info('counter is: ' + counterA)
         if (currentUsersManagerID != null) {
-
-            return managerRecurseCheck(sysUserGR,currentUsersManagerID,outputArr);
+            //gs.info(currentUsersManagerID)
+            return managerRecurseCheck(sysUserGR,currentUsersManagerID, outputArr);
         }
-        function managerRecurseCheck(sysUserGR,currentUsersManagerID,outputArr){
-            sysUserGR.get(currentUsersManagerID);
+
+        function managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr) {
+            var currentUserID = currentUsersManagerID;
+            sysUserGR.get(currentUserID);
             currentUsersManagerID = sysUserGR.getValue('manager');
-           
-            if(currentUsersManagerID === null){
-                outputArr.push(currentUsersManagerID);
-                return passEachID(counterA+1,userSysIDArr,outputArr);
+            //gs.info(currentUsersManagerID);
+            if (currentUsersManagerID === null) {
+                outputArr.push(sysUserGR.getDisplayValue('name'));
+                return passEachID(counterA + 1, userSysIDArr, outputArr);
             }
 
-            return managerRecurseCheck(sysUserGR,currentUsersManagerID,outputArr)
+            return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr)
         }
     }
-        userRecurse(userSysID,[])
+    return userRecurse(userSysID, outputArr);
 }
 
 
-passEachID(0,userSysIDArr);
+gs.info(passEachID(0, userSysIDArr, outputArr));

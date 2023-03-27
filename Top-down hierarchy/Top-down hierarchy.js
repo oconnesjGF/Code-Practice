@@ -44,7 +44,7 @@ function passEachID(counterA, userSysIDArr, outputArr) {
         //gs.info('counter is: ' + counterA)
         if (currentUsersManagerID != null) {
             //gs.info(currentUsersManagerID)
-            return managerRecurseCheck(sysUserGR,currentUsersManagerID, outputArr);
+            return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr);
         }
 
         function managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr) {
@@ -53,8 +53,20 @@ function passEachID(counterA, userSysIDArr, outputArr) {
             currentUsersManagerID = sysUserGR.getValue('manager');
             //gs.info(currentUsersManagerID);
             if (currentUsersManagerID === null) {
-                outputArr.push(sysUserGR.getDisplayValue('name'));
+                    /*
+                if (outputArr.indexOf(sysUserGR.getDisplayValue('name')) === -1) {
+                    outputArr.push(sysUserGR.getDisplayValue('name'));
+
+                }
+                */
+
+                if (outputArr.indexOf(currentUserID) === -1) {
+                    outputArr.push(currentUserID);
+                }
+                // outputArr.push(currentUserID);
                 return passEachID(counterA + 1, userSysIDArr, outputArr);
+
+
             }
 
             return managerRecurseCheck(sysUserGR, currentUsersManagerID, outputArr)

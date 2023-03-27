@@ -32,25 +32,31 @@ function passEachID(counterA, userSysIDArr) {
 
     var userSysID = userSysIDArr[counterA];
 
-    function userRecurse(userSysID, outputArr, counterB) {
+    function userRecurse(userSysID, outputArr) {
         var sysUserGR = new GlideRecord('sys_user');
         sysUserGR.get(userSysID);
-        var usersManagerID = sysUserGR.getValue('manager');
+        var currentUsersManagerID = sysUserGR.getValue('manager');
         var userFullName = sysUserGR.getDisplayValue('name');
         var usersManagerName = sysUserGR.getDisplayValue('manager');
 
-        if (usersManagerID != null) {
+        if (currentUsersManagerID != null) {
 
-            return managerCheck(sysUserGR,usersManagerID);
+            return managerRecurseCheck(sysUserGR,currentUsersManagerID,outputArr);
         }
-        function managerCheck(sysUserGR,usersManagerID){
-            if(usersManagerID === null){
-                return passEachID(counterA+1,userSysIDArr);
+        function managerRecurseCheck(sysUserGR,currentUsersManagerID,outputArr){
+            sysUserGR.get(currentUsersManagerID);
+            currentUsersManagerID = sysUserGR.getValue('manager');
+           
+            if(currentUsersManagerID === null){
+                outputArr.push(currentUsersManagerID);
+                return passEachID(counterA+1,userSysIDArr,outputArr);
             }
+
+            return managerRecurseCheck(sysUserGR,currentUsersManagerID,outputArr)
         }
     }
-
+        userRecurse(userSysID,[])
 }
 
 
-
+passEachID(0,userSysIDArr);

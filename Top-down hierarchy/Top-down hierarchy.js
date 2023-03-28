@@ -2,9 +2,10 @@ function stringify(string) {
   gs.info(JSON.stringify(string));
 }
 
-function getUserInfo(sysID, value){
-    var sysUserGR = new GlideRecord("sys_user");
-
+function getUserManager(sys_id) {
+  var sysUserGR = new GlideRecord("sys_user");
+  sysUserGR.get(sys_id);
+  return sysUserGR.getValue("manager");
 }
 
 function getUsersWithManagersRecords() {
@@ -13,25 +14,15 @@ function getUsersWithManagersRecords() {
   sysUserGR.query();
   var userSysIDArr = [];
 
-
   while (sysUserGR.next()) {
     userSysIDArr.push({
-        sys_id: 
+      sys_id: sysUserGR.getValue("sys_id"),
+      name: sysUserGR.getValue("name"),
+      managerID: getUserManagers(sysUserGR.getValue("sys_id")),
     });
   }
 
-  function passEachID(counterA, userSysIDArr, topLevelManagersArr) {
-    userArrLength = userSysIDArr.length - 1;
-    if (counterA === userArrLength) {
-      return topLevelManagersArr;
-    }
-
-    var userSysID = userSysIDArr[counterA];
-
-    function userRecurse(userSysID, topLevelManagersArr) {
-      var sysUserGR = new GlideRecord("sys_user");
-      sysUserGR.get(userSysID);
-      var currentUsersManagerID = sysUserGR.getValue("manager");
-    }
-  }
+  return userSysIDArr;
 }
+
+stringify(getUsersWithManagersRecord());

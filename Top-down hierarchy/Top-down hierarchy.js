@@ -13,16 +13,23 @@ function getUsersWithManagersRecords() {
   while (sysUserGR.next()) {
     userSysIDArr.push(sysUserGR.getValue("sys_id"))
   };
-//while loop pushes sys ids into array
+  //while loop pushes sys ids into array
+
+
   function userSysIDLoop(counterA, userSysIDArr) {
     var userIDArrLength = userSysIDArr.length - 1;
+
     if (counterA === userIDArrLength) {
-      return outputArr;
+      return userSysIDArr;
     }
-    //userSysIDLoop steps through each id in the array and passes it into the next function
     var userSysID = userSysIDArr[counterA];
 
-    function managerRecurse(userSysID, outputArr) {
+    /*userSysIDLoop recursively gets each sys id in the array
+     and passes it in the next function.*/
+    
+    
+    function managerRecurse(userSysID,objectArr) {
+      
 
       var sysUser = new GlideRecord('sys_user');
       sysUser.get(userSysID);
@@ -30,15 +37,21 @@ function getUsersWithManagersRecords() {
       var userFullName = sysUser.getDisplayValue('name');
       var usersManagerName = sysUser.getDisplayValue('manager');
       
-      if (usersManagerID === null) {
-        return userSysIDLoop(counterA + 1, userSysIDArr);
-      }
+      if(usersManagerID === null)
 
 
+      objectArr.push({
+        sys_id: userSysID,
+        name: userFullName,
+        managerID: usersManagerID,
+        managerName: usersManagerName
+      })
 
 
     }
+    return managerRecurse(userSysID,[])
   }
+  return(userSysIDLoop(0,userSysIDArr));
 }
 
 stringify(getUsersWithManagersRecords());

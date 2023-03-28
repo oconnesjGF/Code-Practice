@@ -107,4 +107,18 @@ function checkValues(objectArr, counterB, counterC) {
   return checkValues(objectArr, counterB, counterC + 1)
 
 }
-stringify(checkValues(objectArr, 0, 0));
+var unsortedArr = checkValues(objectArr, 0, 0);
+
+
+var groupedArr = unsortedArr.reduce(function(result, current) {
+  if (current.managerName !== null) {
+    if (!result[current.managerName]) {
+      result[current.managerName] = { direct_reports: [] };
+    }
+    result[current.managerName].direct_reports.push({employee:current.name});
+  }
+  return result;
+}, {});
+
+
+stringify(groupedArr);

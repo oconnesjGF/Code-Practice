@@ -19,7 +19,7 @@ function stringify(string) {
         sys_id: sysUserGR.getValue("sys_id"),
         name: sysUserGR.getValue("name"),
         managerID: getUserInfo(sysUserGR.manager.getValue("sys_id"), "sys_id"),
-        managerName: getUserInfo(sysUserGR.manager.getValue("sys_id"), "name"),
+      //  managerName: getUserInfo(sysUserGR.manager.getValue("sys_id"), "name"),
       });
     }
   

@@ -17,7 +17,7 @@ function getUsersWithManagersRecords() {
 
 
   function userSysIDLoop(counterA, userSysIDArr, objectArr) {
-    var userIDArrLength = userSysIDArr.length - 1;
+    var userIDArrLength = userSysIDArr.length;
 
     if (counterA === userIDArrLength) {
       return objectArr;
@@ -26,24 +26,24 @@ function getUsersWithManagersRecords() {
 
     /*userSysIDLoop recursively gets each sys id in the array
      and passes it in the next function.*/
-    
-    
-    function managerRecurse(userSysID,objectArr) {
+
+
+    function managerRecurse(userSysID, objectArr) {
 
       var sysUser = new GlideRecord('sys_user');
       sysUser.get(userSysID);
       var usersManagerID = sysUser.getValue('manager');
       var userFullName = sysUser.getDisplayValue('name');
       var usersManagerName = sysUser.getDisplayValue('manager');
-      
-      if(usersManagerID === null){
+
+      if (usersManagerID === null) {
         objectArr.push({
           sys_id: userSysID,
           name: userFullName,
           managerID: null,
           managerName: null
         })
-        return userSysIDLoop(counterA+1, userSysIDArr, objectArr);
+        return userSysIDLoop(counterA + 1, userSysIDArr, objectArr);
 
       }
 
@@ -55,13 +55,62 @@ function getUsersWithManagersRecords() {
         managerName: usersManagerName
       })
 
-      return userSysIDLoop(counterA+1, userSysIDArr, objectArr);
+      return userSysIDLoop(counterA + 1, userSysIDArr, objectArr);
 
     }
 
-    return managerRecurse(userSysID,objectArr);
+    return managerRecurse(userSysID, objectArr);
   }
-  return(userSysIDLoop(0,userSysIDArr,[]));
+  return (userSysIDLoop(0, userSysIDArr, []));
 }
 
-stringify(getUsersWithManagersRecords());
+var objectArr = getUsersWithManagersRecords();
+
+
+
+function checkValues(objectArr, counterB, counterC) {
+  var objectArrLength = objectArr.length;
+  var userSysID = objectArr[counterB].managerID;
+  var sysUser = new GlideRecord('sys_user');
+  sysUser.get(userSysID);
+  var usersManagerID = sysUser.getValue('manager');
+  var userFullName = sysUser.getDisplayValue('name');
+  var usersManagerName = sysUser.getDisplayValue('manager');
+
+  if (counterB === objectArrLength) {
+    return objectArr;
+  }
+
+  if (counterC === objectArrLength) {
+    //testArr.push(objectArr[counterB].managerID);
+    if (userSysID != null) {
+
+      if (usersManagerID === null) {
+        objectArr.push({
+          sys_id: userSysID,
+          name: userFullName,
+          managerID: null,
+          managerName: null
+        })
+      } else {
+
+        objectArr.push({
+          sys_id: userSysID,
+          name: userFullName,
+          managerID: usersManagerID,
+          managerName: usersManagerName
+        })
+      }
+    }
+
+    return checkValues(objectArr, counterB + 1, 0)
+
+  }
+
+  if (objectArr[counterB].managerID === objectArr[counterC].sys_id) {
+    return checkValues(objectArr, counterB + 1, 0)
+  }
+  return checkValues(objectArr, counterB, counterC + 1)
+
+}
+stringify(checkValues(objectArr, 0, 0));

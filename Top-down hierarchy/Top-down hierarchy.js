@@ -2,7 +2,6 @@ function stringify(string) {
   gs.info(JSON.stringify(string));
 }
 
-
 function getUsersWithManagersRecords() {
   //getUsersWithManagersRecords() gets all records where users have managers
   var sysUserGR = new GlideRecord("sys_user");
@@ -14,7 +13,6 @@ function getUsersWithManagersRecords() {
     userSysIDArr.push(sysUserGR.getValue("sys_id"))
   };
   //while loop pushes sys ids into array
-
 
   function userSysIDLoop(counterA, userSysIDArr, objectArr) {
     var userIDArrLength = userSysIDArr.length;
@@ -47,7 +45,6 @@ function getUsersWithManagersRecords() {
 
       }
 
-
       objectArr.push({
         sys_id: userSysID,
         name: userFullName,
@@ -65,7 +62,6 @@ function getUsersWithManagersRecords() {
 }
 
 var objectArr = getUsersWithManagersRecords();
-
 
 
 function checkValues(objectArr, counterB, counterC) {
@@ -102,9 +98,7 @@ function checkValues(objectArr, counterB, counterC) {
         })
       }
     }
-
     return checkValues(objectArr, counterB + 1, 0)
-
   }
 
   if (objectArr[counterB].managerID === objectArr[counterC].sys_id) {

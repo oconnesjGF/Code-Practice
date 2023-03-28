@@ -1,4 +1,4 @@
-function stringify(string) {
+function stringifyOutput(string) {
   gs.info(JSON.stringify(string));
 }
 
@@ -121,4 +121,4 @@ var groupedArr = unsortedArr.reduce(function(result, current) {
 }, {});
 
 
-stringify(groupedArr);
+stringifyOutput(groupedArr);

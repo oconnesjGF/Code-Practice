@@ -120,5 +120,5 @@ var groupedArr = unsortedArr.reduce(function(result, current) {
   return result;
 }, {});
 
-
+groupedArr = { "Employee Hierarchy" : groupedArr };
 stringifyOutput(groupedArr);

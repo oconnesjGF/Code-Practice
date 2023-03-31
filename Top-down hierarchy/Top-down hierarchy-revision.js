@@ -21,7 +21,7 @@ function getUsersWithManagersRecords() {
 
 
 
-        filterManagerID = userObjectArr.filter(function (element) {
+        filterManagerIDArr = userObjectArr.filter(function (element) {
             return element.managerID != undefined || null;
         }).map(function (user) {
             return user.managerID
@@ -30,10 +30,11 @@ function getUsersWithManagersRecords() {
 
     var outputArr = [];
 
-    function getManagers(filterManagerID, outputArr) {
+    function getManagers(filterManagerIDArr, outputArr) {
+        var managerIDArr = filterManagerIDArr;
 
-        if (outputArr.length > 0) {
-            filterManagerID = outputArr.filter(function (element) {
+        if (managerIDArr.length > 0) {
+            managerIDArr = outputArr.filter(function (element) {
                 return element.managerID != undefined || null;
             }).map(function (user) {
                 return user.managerID
@@ -41,7 +42,6 @@ function getUsersWithManagersRecords() {
         }
 
 
-        var managerIDArr = filterManagerID;
         if (managerIDArr.length === 0) {
             return outputArr;
         }
@@ -68,10 +68,10 @@ function getUsersWithManagersRecords() {
                 });
             }
         });
-        return getManagers(filterManagerID, outputArr);
+        return getManagers(filterManagerIDArr, outputArr);
     }
 
-    return getManagers(filterManagerID, outputArr);
+    return getManagers(filterManagerIDArr, outputArr);
 }
 
 stringifyOutput(getUsersWithManagersRecords());

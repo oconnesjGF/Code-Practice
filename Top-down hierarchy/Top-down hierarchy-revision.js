@@ -8,33 +8,70 @@ function getUsersWithManagersRecords() {
     sysUserGR.addEncodedQuery("active=true^managerISNOTEMPTY");
     sysUserGR.query();
     var userObjectArr = [];
-        var usersManagerID = sysUserGR.getValue('manager');
 
     while (sysUserGR.next()) {
         userObjectArr.push({
             sys_id: sysUserGR.getValue("sys_id"),
             name: sysUserGR.getValue("name"),
-            parentID: sysUserGR.getValue('manager'),
-            parentName: sysUserGR.getDisplayValue('manager')
+            managerID: sysUserGR.getValue('manager'),
+            managerName: sysUserGR.getDisplayValue('manager'),
+            direct_reports: []
         });
     };
-    
-    stringifyOutput(userObjectArr)
-/*
-    userObjectArr.forEach(function (elment) {
-        sysUserGR = new GlideRecord("sys_user");
-        sysUserGR.get(elment);
-        var usersManagerID = sysUserGR.getValue('manager');
-        var userFullName = sysUserGR.getDisplayValue('name');
-        var usersManagerName = sysUserGR.getDisplayValue('manager');
 
-        if(userObjectArr.indexOf(elment.sys_id,0) === -1){
-            stringifyOutput(elment)
+
+
+        filterManagerID = userObjectArr.filter(function (element) {
+            return element.managerID != undefined || null;
+        }).map(function (user) {
+            return user.managerID
+        });
+    
+
+    var outputArr = [];
+
+    function getManagers(filterManagerID, outputArr) {
+
+        if (outputArr.length > 0) {
+            filterManagerID = outputArr.filter(function (element) {
+                return element.managerID != undefined || null;
+            }).map(function (user) {
+                return user.managerID
+            })
         }
 
 
-    })
-*/
+        var managerIDArr = filterManagerID;
+        if (managerIDArr.length === 0) {
+            return outputArr;
+        }
+        managerIDArr.forEach(function (element) {
+            sysUserGR = new GlideRecord("sys_user");
+            sysUserGR.get(element);
+            var currentUserManagerID = sysUserGR.getValue('manager')
+            if (currentUserManagerID != null) {
+                outputArr.push({
+                    sys_id: element,
+                    name: sysUserGR.getValue("name"),
+                    managerID: sysUserGR.getValue('manager'),
+                    managerName: sysUserGR.getDisplayValue('manager'),
+                    direct_reports: []
+                });
+            }
+            if (currentUserManagerID === null) {
+                outputArr.push({
+                    sys_id: element,
+                    name: sysUserGR.getValue("name"),
+                    managerID: null,
+                    managerName: null,
+                    direct_reports: []
+                });
+            }
+        });
+        return getManagers(filterManagerID, outputArr);
+    }
+
+    return getManagers(filterManagerID, outputArr);
 }
 
-getUsersWithManagersRecords()
+stringifyOutput(getUsersWithManagersRecords());

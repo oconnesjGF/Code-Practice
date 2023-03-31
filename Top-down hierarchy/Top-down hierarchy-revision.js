@@ -28,10 +28,13 @@ var usersWithoutManager = userObjectArr.filter(function(element){
      return element.managerID === null
     
 })
+var blah = {};
 
+ userObjectArr.forEach(function(element,i){
+    blah[element.sys_id] = {name:element.name,managerID:element.managerID,directReports:userObjectArr.filter(function(subElment){
+        return element.sys_id == subElment.managerID;
+    })}
 
-var test = usersWithoutManager.forEach(function(element,i){
-    for(var blah in element){
-      gs.log(i+': ' + blah + ': ' + element[blah])  
-    }
+    
 })
+gs.log(JSON.stringify(blah,null,"\t"))

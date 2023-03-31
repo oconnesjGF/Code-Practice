@@ -2,10 +2,10 @@ function stringifyOutput(string) {
     gs.info(JSON.stringify(string));
 }
 
-function getUsersWithManagersRecords() {
+
     //getUsersWithManagersRecords() gets all records where users have managers
     var sysUserGR = new GlideRecord("sys_user");
-    sysUserGR.addEncodedQuery("active=true^managerISNOTEMPTY");
+    sysUserGR.addEncodedQuery("active=true");
     sysUserGR.query();
     var userObjectArr = [];
 
@@ -19,59 +19,19 @@ function getUsersWithManagersRecords() {
         });
     };
 
-
-
-        filterManagerIDArr = userObjectArr.filter(function (element) {
-            return element.managerID != undefined || null;
-        }).map(function (user) {
-            return user.managerID
-        });
+var usersWithManager = userObjectArr.filter(function(element){
+     return element.managerID !== null
     
+})
 
-    var outputArr = [];
-
-    function getManagers(filterManagerIDArr, outputArr) {
-        var managerIDArr = filterManagerIDArr;
-
-        if (managerIDArr.length > 0) {
-            managerIDArr = outputArr.filter(function (element) {
-                return element.managerID != undefined || null;
-            }).map(function (user) {
-                return user.managerID
-            })
-        }
+var usersWithoutManager = userObjectArr.filter(function(element){
+     return element.managerID === null
+    
+})
 
 
-        if (managerIDArr.length === 0) {
-            return outputArr;
-        }
-        managerIDArr.forEach(function (element) {
-            sysUserGR = new GlideRecord("sys_user");
-            sysUserGR.get(element);
-            var currentUserManagerID = sysUserGR.getValue('manager')
-            if (currentUserManagerID != null) {
-                outputArr.push({
-                    sys_id: element,
-                    name: sysUserGR.getValue("name"),
-                    managerID: sysUserGR.getValue('manager'),
-                    managerName: sysUserGR.getDisplayValue('manager'),
-                    direct_reports: []
-                });
-            }
-            if (currentUserManagerID === null) {
-                outputArr.push({
-                    sys_id: element,
-                    name: sysUserGR.getValue("name"),
-                    managerID: null,
-                    managerName: null,
-                    direct_reports: []
-                });
-            }
-        });
-        return getManagers(filterManagerIDArr, outputArr);
+var test = usersWithoutManager.forEach(function(element,i){
+    for(var blah in element){
+      gs.log(i+': ' + blah + ': ' + element[blah])  
     }
-
-    return getManagers(filterManagerIDArr, outputArr);
-}
-
-stringifyOutput(getUsersWithManagersRecords());
+})
